@@ -1,0 +1,6 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Backend:etc/menu.xsd">
+    <menu>
+        <add id="Cyclr_Webhook::systemsettings" title="System Settings" module="Cyclr_Webhook" sortOrder="1000" action="adminhtml/system_config/edit/section/system" resource="Cyclr_Webhook::configuration" parent="Magento_Backend::system_other_settings"/>
+    </menu>
+</config>
