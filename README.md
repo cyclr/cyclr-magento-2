@@ -9,7 +9,27 @@ Copy the extension to your Magento instance, e.g.
 cp -r ./ /var/www/html/app/code/Cyclr/Webhook/
 ```
 
-Update database schema
+### Fix file permissions (if needed)
+
+Before running the upgrade command, ensure Magento has proper write permissions. This is especially important on Bitnami instances or managed hosting environments:
+
+```bash
+# Navigate to your Magento root directory
+cd /path/to/magento
+
+# Fix permissions for var/ directories and config files
+sudo chown -R bitnami:bitnami var/ generated/ pub/static/ pub/media/ app/etc/
+sudo chmod -R 755 var/ generated/ pub/static/ pub/media/
+sudo chmod -R 644 app/etc/*.php
+sudo chmod 755 app/etc/
+```
+
+**Note:** Replace `bitnami:bitnami` with the appropriate user:group for your server setup:
+- Bitnami instances: `bitnami:bitnami`
+- Standard Apache: `www-data:www-data` or `apache:apache`  
+- Standard Nginx: `nginx:nginx` or `www-data:www-data`
+
+### Update database schema
 ```
 php bin/magento setup:upgrade
 ```

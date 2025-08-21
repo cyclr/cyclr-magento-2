@@ -3,25 +3,25 @@
 	<route method="POST" url="/V1/cyclr-webhook/webhook">
 		<service class="Cyclr\Webhook\Api\WebhookManagementInterface" method="postWebhook"/>
 		<resources>
-			<resource ref="self"/>
+			<resource ref="Cyclr_Webhook::webhook"/>
 		</resources>
 	</route>
 	<route method="DELETE" url="/V1/cyclr-webhook/webhook/:id">
 		<service class="Cyclr\Webhook\Api\WebhookManagementInterface" method="deleteWebhook"/>
 		<resources>
-			<resource ref="self"/>
+			<resource ref="Cyclr_Webhook::webhook"/>
 		</resources>
 	</route>
 	<route method="GET" url="/V1/cyclr-webhook/webhooks">
 		<service class="Cyclr\Webhook\Api\WebhookManagementInterface" method="listWebhooks"/>
 		<resources>
-			<resource ref="self"/>
+			<resource ref="Cyclr_Webhook::webhook"/>
 		</resources>
 	</route>
 	<route method="GET" url="/V1/cyclr-webhook/webhook/:id">
 		<service class="Cyclr\Webhook\Api\WebhookManagementInterface" method="getWebhook"/>
 		<resources>
-			<resource ref="self"/>
+			<resource ref="Cyclr_Webhook::webhook"/>
 		</resources>
 	</route>
 </routes>
