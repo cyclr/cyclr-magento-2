@@ -11,6 +11,11 @@ use \Cyclr\Webhook\Model\WebhookFactory;
  */
 class WebhookManagement implements \Cyclr\Webhook\Api\WebhookManagementInterface
 {
+    /**
+     * @var WebhookFactory
+     */
+    private $webhookFactory;
+
     public function __construct(
         WebhookFactory $webhookFactory
     ) {
