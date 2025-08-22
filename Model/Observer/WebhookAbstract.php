@@ -94,7 +94,8 @@ class WebhookAbstract implements ObserverInterface
                 }
             }
 
-            $this->_sendWebhook($webhook->getUrl(), $payload_body);
+            // Pass the full original data along with the filtered payload
+            $this->_sendWebhook($webhook->getUrl(), $payload_body, $returned_data);
         }
     }
 
@@ -124,30 +125,45 @@ class WebhookAbstract implements ObserverInterface
             $this->_webhookEvent = preg_replace('/updated$/', 'created', strtolower($this->_webhookEvent));
     }
 
-    protected function _sendWebhook($url, $body)
+    protected function _sendWebhook($url, $body, $originalData = null)
     {
         $this->_logger->debug("Sending webhook for event " . $this->_webhookEvent . " to " . $url);
 
-        $existingJobs = $this->_hookEventFactory
-            ->create()
-            ->getCollection()
-            ->addFieldToFilter('entity_id', $body["entity_id"])
-            ->addFieldToFilter('updated_at', $body["updated_at"]);
+        // Use original data for entity_id and updated_at if available, otherwise fallback to body
+        $entityId = isset($originalData['entity_id']) ? $originalData['entity_id'] : (isset($body['entity_id']) ? $body['entity_id'] : null);
+        $updatedAt = isset($originalData['updated_at']) ? $originalData['updated_at'] : (isset($body['updated_at']) ? $body['updated_at'] : null);
 
-        if ($existingJobs->getSize() > 0) {
-            return;
+        // Only check for existing jobs if we have both entity_id and updated_at
+        if ($entityId && $updatedAt) {
+            $existingJobs = $this->_hookEventFactory
+                ->create()
+                ->getCollection()
+                ->addFieldToFilter('entity_id', $entityId)
+                ->addFieldToFilter('updated_at', $updatedAt);
+
+            if ($existingJobs->getSize() > 0) {
+                return;
+            }
         }
 
         $bodyJson = $this->_jsonHelper->jsonEncode($body);
 
         $hookEvent = $this->_hookEventFactory->create();
-        $hookEvent->addData([
+        $hookEventData = [
             "hook_type" => $this->_webhookEvent,
             "body_json" => $bodyJson,
-            "entity_id" => $body['entity_id'],
-            "updated_at" => $body['updated_at'],
             "url" => $url
-        ]);
+        ];
+
+        // Only add entity_id and updated_at if they exist
+        if ($entityId) {
+            $hookEventData["entity_id"] = $entityId;
+        }
+        if ($updatedAt) {
+            $hookEventData["updated_at"] = $updatedAt;
+        }
+
+        $hookEvent->addData($hookEventData);
         $saveHookEvent = $hookEvent->save();
     }
 
